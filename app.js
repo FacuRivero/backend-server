@@ -44,3 +44,6 @@ app.use('/', appRoutes);
 app.listen(3000, () => {
     console.log('Express server puerto 3000 online');
 });
+
+//Iniciar mongo
+// "C:\Program Files\MongoDB\Server\4.2\bin\mongod.exe" --dbpath="c:\data\db"
