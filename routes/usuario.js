@@ -4,13 +4,19 @@ let app = express();
 let bcrypt = require('bcryptjs');
 let jwt = require("jsonwebtoken");
 
-var mdAutenticacion = require('../middlewares/autenticacion');
+let mdAutenticacion = require('../middlewares/autenticacion');
 
 let Usuario = require('../models/usuario')
 
 // OBTENER TODOS LOS USUARIOS
 app.get("/", (req, res, next) => {
+
+    let desde = req.query.desde || 0;
+    desde = Number(desde);
+
     Usuario.find({}, 'nombre email img role')
+        .skip(desde)
+        .limit(5)
         .exec((err, usuarios) => {
 
             if (err) {
@@ -20,10 +26,16 @@ app.get("/", (req, res, next) => {
                     errors: err
                 });
             } else {
-                return res.status(200).json({
-                    ok: true,
-                    usuarios: usuarios
-                });
+
+                Usuario.count({}, (err, conteo) => {
+                    return res.status(200).json({
+                        ok: true,
+                        usuarios: usuarios,
+                        total: conteo
+                    });
+                })
+
+
             }
         })
 
@@ -31,12 +43,12 @@ app.get("/", (req, res, next) => {
 
 
 // ACTUALZIAR USUARIO
-app.put('/:id', (req, res) => {
+app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     let id = req.params.id;
     let body = req.body;
 
-    Usuario.findById(id, mdAutenticacion.verificaToken, (err, usuario) => {
+    Usuario.findById(id, (err, usuario) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
