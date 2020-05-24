@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
     Medico.find({})
         .skip(desde)
-        .limit(5)
+        .limit(50)
         .populate('usuario', 'nombre email', Usuario)
         .populate('hospital', Hospital)
         .exec((err, medicos) => {
@@ -40,6 +40,40 @@ app.get('/', (req, res) => {
 
 });
 
+//OBTENER MEDICO
+app.get('/:id', (req, res) => {
+
+    let id = req.params.id;
+
+    Medico.findById(id)
+        .populate('usuario', 'nombre email img', Usuario)
+        .populate('hospital', Hospital)
+        .exec((err, medico) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: "Error buscando id del medico.",
+                    errors: err
+                })
+            }
+
+            if (!medico) {
+                return res.status().json({
+                    ok: false,
+                    mensaje: "El medico con el id " + id + " no existe.",
+                    errors: { message: "No existe un medico con ese ID" },
+                });
+            }
+
+            return res.status(200).json({
+                ok: true,
+                medico
+            });
+
+        })
+
+})
+
 //ACTUALIZACION MEDICOS
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
@@ -58,7 +92,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         if (!medico) {
             return res.status().json({
                 ok: false,
-                mensaje: "El hospital con el id " + id + " no existe.",
+                mensaje: "El medico con el id " + id + " no existe.",
                 errors: { message: "No existe un medico con ese ID" },
             });
         }

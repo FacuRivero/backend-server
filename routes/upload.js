@@ -1,5 +1,5 @@
 let express = require('express');
-let fileupload = require("express-fileupload");
+const fileUpload = require('express-fileupload');
 let fs = require('fs');
 let app = express();
 
@@ -8,7 +8,7 @@ let Usuario = require('../models/usuario')
 let Medico = require('../models/medico')
 
 //default options
-app.use(fileupload());
+app.use(fileUpload());
 
 // Rutas
 app.put("/:tipo/:id", (req, res, next) => {
@@ -60,6 +60,9 @@ app.put("/:tipo/:id", (req, res, next) => {
     //Mover el archivo a un path especifico
     let path = `./uploads/${tipo}/${nombreArchivo}`;
 
+
+
+
     archivo.mv(path, err => {
 
         if (err) {
@@ -80,6 +83,8 @@ app.put("/:tipo/:id", (req, res, next) => {
 
 function subirPorTipo(tipo, id, nombreArchivo, res) {
 
+
+
     if (tipo === 'usuarios') {
         Usuario.findById(id, (err, usuario) => {
 
@@ -94,8 +99,16 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
             let pathViejo = './uploads/usuarios/' + usuario.img;
 
             //Si existe una archivo lo elimina
-            if (fs.existsSync(pathViejo)) {
-                fs.unlink(pathViejo);
+            // if (fs.existsSync(pathViejo)) {
+            //     fs.unlink(pathViejo);
+            // }
+
+            try {
+                if (fs.existsSync(pathViejo)) {
+                    fs.unlinkSync(pathViejo);
+                }
+            } catch (err) {
+                console.error(err)
             }
 
             usuario.img = nombreArchivo;
@@ -127,8 +140,16 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
             let pathViejo = "./uploads/medicos/" + medico.img;
 
             //Si existe una archivo lo elimina
-            if (fs.existsSync(pathViejo)) {
-                fs.unlink(pathViejo);
+            // if (fs.existsSync(pathViejo)) {
+            //     fs.unlink(pathViejo);
+            // }
+
+            try {
+                if (fs.existsSync(pathViejo)) {
+                    fs.unlinkSync(pathViejo);
+                }
+            } catch (err) {
+                console.error(err)
             }
 
             medico.img = nombreArchivo;
@@ -159,8 +180,16 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
             let pathViejo = "./uploads/hospitales/" + hospital.img;
 
             //Si existe una archivo lo elimina
-            if (fs.existsSync(pathViejo)) {
-                fs.unlink(pathViejo);
+            // if (fs.existsSync(pathViejo)) {
+            //     fs.unlink(pathViejo);
+            // }
+
+            try {
+                if (fs.existsSync(pathViejo)) {
+                    fs.unlinkSync(pathViejo);
+                }
+            } catch (err) {
+                console.error(err)
             }
 
             hospital.img = nombreArchivo;
